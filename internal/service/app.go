@@ -67,7 +67,13 @@ func (a *App) parseBusinessDate(value string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("invalid visit date: %w", err)
 	}
-	return parsed.UTC().Format("2006-01-02"), nil
+	// Preserve the visitor's own calendar day. Converting to UTC before
+	// formatting rolls timestamps that straddle midnight (e.g. 00:30+08:00)
+	// onto the previous day, so the stored business date disagrees with the
+	// batch's BusinessDate. A repeated import into a confirmed batch replays
+	// that wrong date from storage; formatting in the input's own location
+	// keeps RB684-37's true result and keeps later imports independent.
+	return parsed.Format("2006-01-02"), nil
 }
 
 func (a *App) CreateBatch(id, reference, source string) (domain.ImportBatch, error) {
