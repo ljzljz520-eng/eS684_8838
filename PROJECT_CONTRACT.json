@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "metrics": {
+    "production_loc": 2436,
+    "production_files": 43,
+    "production_packages": 10,
+    "test_files": 9,
+    "production_functions": 188,
+    "decision_points": 354
+  },
+  "persistence": {
+    "module": "go.etcd.io/bbolt",
+    "entities": [
+      "VisitorRecord",
+      "ImportBatch",
+      "AuditEvent",
+      "Attachment",
+      "CollaborationTask"
+    ],
+    "reopen_test": "TestPersistenceSurvivesReopen"
+  },
+  "workflows": [
+    {
+      "steps": [
+        "create visitor batch",
+        "import and validate visitor records",
+        "review and publish confirmed records",
+        "archive batch and audit events"
+      ],
+      "test": "TestWorkflowCreateReviewArchive"
+    },
+    {
+      "steps": [
+        "search by batch or visitor keyword",
+        "select target visitor record",
+        "update visitor details and tags",
+        "publish the updated record"
+      ],
+      "test": "TestWorkflowSearchUpdatePublish"
+    },
+    {
+      "steps": [
+        "receive external visitor data",
+        "validate fields and business dates",
+        "persist batch records audits and tasks",
+        "generate status and collaboration report"
+      ],
+      "test": "TestWorkflowImportReport"
+    }
+  ]
+}
